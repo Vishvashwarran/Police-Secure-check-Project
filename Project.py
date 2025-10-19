@@ -389,25 +389,19 @@ with st.form("new_log_form"):
     submitted = st.form_submit_button("Predict Stop Outcome and Violation")
 
     if submitted:
-        # -----------------------------
-        # 1. Map form inputs to CSV values
-        # -----------------------------
+        
         driver_gender_input = 'M' if driver_gender.lower().startswith('m') else 'F'
         search_conducted_input = 1 if search_conducted == '1' else 0
         drugs_related_stop_input = 1 if drugs_related_stop == '1' else 0
         driver_age_input = int(driver_age)
 
-        # -----------------------------
-        # 2. Ensure DataFrame types match
-        # -----------------------------
+       
         df['driver_gender'] = df['driver_gender'].str.strip().str.upper()
         df['driver_age'] = df['driver_age'].astype(int)
         df['search_conducted'] = df['search_conducted'].astype(int)
         df['drugs_related_stop'] = df['drugs_related_stop'].astype(int)
 
-        # -----------------------------
-        # 3. Filter DataFrame for exact match
-        # -----------------------------
+       
         filtered_df = df[
             (df['driver_gender'] == driver_gender_input) &
             (df['driver_age'] == driver_age_input) &
@@ -415,26 +409,22 @@ with st.form("new_log_form"):
             (df['drugs_related_stop'] == drugs_related_stop_input)
         ]
 
-        # -----------------------------
-        # 4. Determine predictions
-        # -----------------------------
+        
         if not filtered_df.empty:
             predicted_outcome = filtered_df['stop_outcome'].mode()[0]
             predicted_violation = filtered_df['violation'].mode()[0]
         else:
-            # If no exact match exists, fallback: pick the mode from similar rows
+
             similar_df = df[df['driver_gender'] == driver_gender_input]
             if not similar_df.empty:
                 predicted_outcome = similar_df['stop_outcome'].mode()[0]
                 predicted_violation = similar_df['violation'].mode()[0]
             else:
-                # absolute fallback if nothing matches
+
                 predicted_outcome = "warning"
                 predicted_violation = "speeding"
 
-        # -----------------------------
-        # 5. Display results
-        # -----------------------------
+
         search_text = "A Search Was Conducted" if search_conducted_input else "No Search was Conducted"
         drug_text = "was drug related" if drugs_related_stop_input else "was not drug-related"
 
@@ -456,51 +446,7 @@ with st.form("new_log_form"):
 
 
 
-    # if submitted:
-    #     # Convert form inputs to match DataFrame types
-    #     search_conducted_bool = True if search_conducted == '1' else False
-    #     drugs_related_stop_bool = True if drugs_related_stop == '1' else False
-
-    #     # Filter DataFrame
-    #     filtered_df = df[
-    #         (df['driver_gender'].str.lower() == driver_gender.lower().strip()) &
-    #         (df['driver_age'] == driver_age) &
-    #         (df['search_conducted'] == int(search_conducted_bool)) &
-    #         (df['drugs_related_stop'] == int(drugs_related_stop_bool))
-
-    #     ]
-
-    #     # Determine predictions
-    #     if not filtered_df.empty:
-    #         predicted_outcome = filtered_df['stop_outcome'].mode()[0]
-    #         predicted_violation = filtered_df['violation'].mode()[0]
-    #     else:
-    #         predicted_outcome = "warning"
-    #         predicted_violation = "speeding"
-
-    #     # Text for display
-    #     search_text = "A Search Was Conducted" if int(search_conducted_bool) else "No Search was Conducted"
-    #     drug_text = "was drug related" if int(drugs_related_stop_bool) else "was not drug-related"
-
-    #     # Display results
-    #     st.markdown(f"""
-    #     🎯 **Prediction Summary**
-                    
-    #     - **Predicted Violation:** {predicted_violation}
-    #     - **Predicted Stop Outcome:** {predicted_outcome}
-
-    #     📑 A {driver_age}-year-old {driver_gender} driver in {country_name} was stopped at {stop_time.strftime('%I:%M %p')} on {stop_date}
-    #     {search_text}, and the stop {drug_text}.
-    #     Stop Duration: **{stop_duration}**.
-    #     Vehicle Number: **{vehicle_number}**.
-    #     """)
-    #     st.balloons()
-
-
-
-
-
-
+    
 
 
 
